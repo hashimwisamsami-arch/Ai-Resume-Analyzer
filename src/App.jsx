@@ -38,12 +38,12 @@ const App = () => {
     return texts.join("\n").trim();
   };
 
-  const parseJSONResponse = (replay) => {
+  const parseJSONResponse = (response) => {
     try {
-      const match = replay.match(/\{[\s\S]*\}/);
+      const match = response.match(/\{[\s\S]*\}/);
       const parsed = match ? JSON.parse(match[0]) : {};
       if (!parsed.overallScore && !parsed.error) {
-        throw new Error("InValid Ai Response");
+        throw new Error("Invalid AI response");
       }
       return parsed;
     } catch (error) {
@@ -56,6 +56,9 @@ const App = () => {
   };
 
   const analyzeResume = async (text) => {
+    if (!aiReady) {
+      throw new Error("AI service is not ready. Please wait and try again.");
+    }
     const prompt = constants.ANALYZE_RESUME_PROMPT.replace(
       "{{DOCUMENT_TEXT}}",
       text,
@@ -78,7 +81,7 @@ const App = () => {
     return result;
   };
 
-  const handelFileUpload = async (e) => {
+  const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file || file.type !== "application/pdf") {
       return alert("please upload pdf file only");
